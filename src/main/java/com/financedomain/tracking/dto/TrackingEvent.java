@@ -2,6 +2,8 @@ package com.financedomain.tracking.dto;
 
 import lombok.*;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.Instant;
 
 @Getter
@@ -9,7 +11,11 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Document(collection = "tracking_events")
 public class TrackingEvent {
+
+    @Id
+    private String id;
 
     /** Type d'événement : LOGIN, PURCHASE_PASS, PURCHASE_CREDIT, VIEW_USAGE, LOGOUT, etc. */
     private String eventType;
