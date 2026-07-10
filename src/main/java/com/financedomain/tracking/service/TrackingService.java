@@ -1,26 +1,22 @@
 package com.financedomain.tracking.service;
 
 import com.financedomain.tracking.dto.TrackingEvent;
+import com.financedomain.tracking.repository.TrackingEventRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Service
 public class TrackingService {
 
-    /**
-     * Stockage en mémoire des événements (en attendant Kafka).
-     * Remplacé dans la prochaine étape par un producer Kafka.
-     */
-    private final List<TrackingEvent> eventStore = Collections.synchronizedList(new ArrayList<>());
+    @Autowired
+    private TrackingEventRepository trackingEventRepository;
 
     /**
      * Reçoit un événement, lui affecte un timestamp s'il est absent,
-     * le logue et le stocke localement.
-     * TODO (Kafka) : remplacer le stockage local par kafkaTemplate.send(topic, event)
+     * le logue et le stocke en base de données NoSQL.
      */
     public TrackingEvent collect(TrackingEvent event) {
         if (event.getTimestamp() == null) {
@@ -33,19 +29,16 @@ public class TrackingService {
                 event.getSourceService(),
                 event.getTimestamp());
 
-        eventStore.add(event);
-        return event;
+        return trackingEventRepository.save(event);
     }
 
     /** Retourne tous les événements collectés (utile pour les tests / debug). */
     public List<TrackingEvent> getAllEvents() {
-        return Collections.unmodifiableList(eventStore);
+        return trackingEventRepository.findAll();
     }
 
     /** Retourne les événements filtrés par msisdn. */
     public List<TrackingEvent> getEventsByMsisdn(String msisdn) {
-        return eventStore.stream()
-                .filter(e -> msisdn.equals(e.getMsisdn()))
-                .toList();
+        return trackingEventRepository.findByMsisdn(msisdn);
     }
 }
