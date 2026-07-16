@@ -5,6 +5,7 @@ import com.financedomain.tracking.service.TrackingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +21,10 @@ public class TrackingController {
     @Autowired
     private TrackingService trackingService;
 
+    private KafkaTemplate<String, Object> kafkaTemplate;
+
+
+
     /**
      * Endpoint principal : reçoit un événement depuis n'importe quel microservice.
      * Accessible via appels Feign internes (rôle INTERNAL) ou depuis la gateway.
@@ -32,6 +37,11 @@ public class TrackingController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UNAUTHORIZED);
         }
         TrackingEvent saved = trackingService.collect(event);
+        try {
+            kafkaTemplate.send("tracking-events", saved.getMsisdn(), saved);
+        } catch (Exception e) {
+            System.err.println("Erreur d'envoi de l'événement vers Kafka : " + e.getMessage());
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
