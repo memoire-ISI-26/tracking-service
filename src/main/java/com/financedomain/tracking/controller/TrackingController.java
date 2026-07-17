@@ -21,9 +21,8 @@ public class TrackingController {
     @Autowired
     private TrackingService trackingService;
 
+    @Autowired
     private KafkaTemplate<String, Object> kafkaTemplate;
-
-
 
     /**
      * Endpoint principal : reçoit un événement depuis n'importe quel microservice.
