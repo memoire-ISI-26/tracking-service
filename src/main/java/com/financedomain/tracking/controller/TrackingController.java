@@ -2,6 +2,7 @@ package com.financedomain.tracking.controller;
 
 import com.financedomain.tracking.dto.TrackingEvent;
 import com.financedomain.tracking.service.TrackingService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/tracking")
 public class TrackingController {
@@ -39,7 +41,7 @@ public class TrackingController {
         try {
             kafkaTemplate.send("tracking-events", saved.getMsisdn(), saved);
         } catch (Exception e) {
-            System.err.println("Erreur d'envoi de l'événement vers Kafka : " + e.getMessage());
+            log.error("Erreur d'envoi de l'événement vers Kafka : {}", e.getMessage(), e);
         }
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
