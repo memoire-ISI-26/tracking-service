@@ -2,12 +2,14 @@ package com.financedomain.tracking.service;
 
 import com.financedomain.tracking.dto.TrackingEvent;
 import com.financedomain.tracking.repository.TrackingEventRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
 
+@Slf4j
 @Service
 public class TrackingService {
 
@@ -23,7 +25,7 @@ public class TrackingService {
             event.setTimestamp(Instant.now());
         }
 
-        System.out.printf("[TRACKING] type=%s | msisdn=%s | service=%s | ts=%s%n",
+        log.info("[TRACKING] type={} | msisdn={} | service={} | ts={}",
                 event.getEventType(),
                 event.getMsisdn(),
                 event.getSourceService(),
