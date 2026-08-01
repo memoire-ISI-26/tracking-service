@@ -31,7 +31,7 @@ public class TrackingController {
      * Accessible via appels Feign internes (rôle INTERNAL) ou depuis la gateway.
      */
     @PostMapping("/event")
-    public ResponseEntity<?> collectEvent(
+    public ResponseEntity<Object> collectEvent(
             @RequestBody TrackingEvent event,
             @RequestHeader(value = "X-User-Role", required = false) String xUserRole) {
         if (xUserRole == null) {
@@ -50,7 +50,7 @@ public class TrackingController {
      * Consultation de tous les événements — réservé à l'administrateur.
      */
     @GetMapping("/events")
-    public ResponseEntity<?> getAllEvents(
+    public ResponseEntity<Object> getAllEvents(
             @RequestHeader(value = "X-User-Role", required = false) String xUserRole) {
         if (xUserRole == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UNAUTHORIZED);
@@ -67,7 +67,7 @@ public class TrackingController {
      * Un CLIENT ne peut voir que ses propres événements.
      */
     @GetMapping("/events/{msisdn}")
-    public ResponseEntity<?> getEventsByMsisdn(
+    public ResponseEntity<Object> getEventsByMsisdn(
             @PathVariable String msisdn,
             @RequestHeader(value = "X-User-Phone", required = false) String xUserPhone,
             @RequestHeader(value = "X-User-Role", required = false) String xUserRole) {
